@@ -2,18 +2,15 @@
 
 import { useState } from "react";
 import { Button, Container, Box, Typography } from "@mui/material";
-import { Document, Page, pdfjs } from "react-pdf";
+import PDFViewer from "../components/pdfviewer"; 
 
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-
-export default function Home() {
+export default function Index() {
   const [pdfFile, setPdfFile] = useState(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file && file.type === "application/pdf") {
-      setPdfFile(URL.createObjectURL(file));
+      setPdfFile(URL.createObjectURL(file)); 
     }
   };
 
@@ -23,7 +20,6 @@ export default function Home() {
         PDF Viewer
       </Typography>
       
-      {/* Upload Button */}
       <Button
         variant="contained"
         component="label"
@@ -33,29 +29,7 @@ export default function Home() {
         <input type="file" hidden accept="application/pdf" onChange={handleFileChange} />
       </Button>
 
-      {/* PDF Viewer Box */}
-      <Box
-        sx={{
-          border: "2px dashed #1565c0",
-          borderRadius: "8px",
-          height: "500px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          mt: 3,
-          bgcolor: "#f5f5f5",
-        }}
-      >
-        {pdfFile ? (
-          <Document file={pdfFile} onLoadError={console.error}>
-            <Page pageNumber={1} width={500} />
-          </Document>
-        ) : (
-          <Typography variant="body1" sx={{ color: "#1565c0" }}>
-            No PDF Loaded
-          </Typography>
-        )}
-      </Box>
+      {pdfFile && <PDFViewer pdfFile={pdfFile} />}
     </Container>
   );
 }
