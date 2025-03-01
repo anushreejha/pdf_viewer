@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button, Container, Box, Typography, IconButton } from "@mui/material";
 import PDFViewer from "../components/pdfviewer";
 import {
-  EditNoteOutlined, // Updated highlighter icon
+  EditNoteOutlined, 
   SearchOutlined,
   BookmarkBorderOutlined,
 } from "@mui/icons-material";
@@ -21,31 +21,31 @@ export default function Index() {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, display: "flex", gap: 2 }}>
-      {/* Left Banner - Highlights */}
+      {/*highlights display box (left)*/}
       <Box
         sx={{
           width: "200px",
-          backgroundColor: "#f5f5f5", // Light grey background
-          color: "#0171c5", // Blue text
+          backgroundColor: "#f5f5f5", 
+          color: "#0171c5", 
           padding: "20px",
           borderRadius: "8px",
           textAlign: "center",
         }}
       >
         <Typography variant="h6">Highlights</Typography>
-        {/* Placeholder for highlighted texts */}
+        {/*TODO: add highlighted texts*/}
         <Typography variant="body2" sx={{ mt: 2 }}>
           Highlighted texts will appear here.
         </Typography>
       </Box>
 
-      {/* Main Content */}
+      {/*preview box*/}
       <Box sx={{ flex: 1 }}>
         <Typography variant="h4" gutterBottom sx={{ color: "#0171c5", textAlign: "center" }}>
           PDF Viewer
         </Typography>
 
-        {/* Centered Upload Button */}
+        {/*upload pdf button*/}
         <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
           <Button
             variant="contained"
@@ -64,11 +64,11 @@ export default function Index() {
         {pdfFile && <PDFViewer pdfFile={pdfFile} />}
       </Box>
 
-      {/* Right Menu Bar */}
+      {/*menu bar (right)*/}
       <Box
         sx={{
           width: "64px",
-          backgroundColor: "#f5f5f5", // Light grey background
+          backgroundColor: "#f5f5f5", 
           padding: "10px",
           borderRadius: "8px",
           display: "flex",
@@ -79,7 +79,7 @@ export default function Index() {
       >
         <IconButton
           sx={{
-            backgroundColor: "#0171c5", // Blue circle
+            backgroundColor: "#0171c5", 
             color: "white",
             borderRadius: "50%",
             width: "40px",
@@ -87,11 +87,11 @@ export default function Index() {
             ":hover": { backgroundColor: "#01579b" },
           }}
         >
-          <EditNoteOutlined /> {/* Updated highlighter icon */}
+          <EditNoteOutlined /> 
         </IconButton>
         <IconButton
           sx={{
-            backgroundColor: "#0171c5", // Blue circle
+            backgroundColor: "#0171c5", 
             color: "white",
             borderRadius: "50%",
             width: "40px",
@@ -103,7 +103,7 @@ export default function Index() {
         </IconButton>
         <IconButton
           sx={{
-            backgroundColor: "#0171c5", // Blue circle
+            backgroundColor: "#0171c5",
             color: "white",
             borderRadius: "50%",
             width: "40px",

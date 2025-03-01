@@ -40,35 +40,65 @@ const PDFViewer = ({ pdfFile }) => {
             width: "100%",
             maxWidth: "800px",
             height: "80vh",
-            overflowY: "auto",
+            overflow: "auto", 
             border: "1px solid #ccc",
             padding: "10px",
             backgroundColor: "#f8f8f8",
             position: "relative",
           }}
         >
-          {/* Zoom and Download Controls */}
+          {/*zoom & download controls - preview box*/}
           <Box
             sx={{
-              position: "absolute",
-              top: 10,
-              right: 10,
+              position: "sticky", 
+              top: 0,
               display: "flex",
               gap: 1,
-              backgroundColor: "white",
-              borderRadius: "4px",
-              padding: "4px",
-              boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+              justifyContent: "flex-end",
+              zIndex: 1, 
             }}
           >
-            <IconButton onClick={handleZoomIn} size="small">
-              <ZoomIn />
+            <IconButton
+              onClick={handleZoomOut}
+              size="small"
+              sx={{
+                backgroundColor: "white",
+                borderRadius: "50%",
+                width: "32px",
+                height: "32px",
+                boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                ":hover": { backgroundColor: "#f0f0f0" },
+              }}
+            >
+              <ZoomOut sx={{ color: "#666" }} />
             </IconButton>
-            <IconButton onClick={handleZoomOut} size="small">
-              <ZoomOut />
+            <IconButton
+              onClick={handleZoomIn}
+              size="small"
+              sx={{
+                backgroundColor: "white",
+                borderRadius: "50%",
+                width: "32px",
+                height: "32px",
+                boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                ":hover": { backgroundColor: "#f0f0f0" },
+              }}
+            >
+              <ZoomIn sx={{ color: "#666" }} />
             </IconButton>
-            <IconButton onClick={handleDownload} size="small">
-              <Download />
+            <IconButton
+              onClick={handleDownload}
+              size="small"
+              sx={{
+                backgroundColor: "white",
+                borderRadius: "50%",
+                width: "32px",
+                height: "32px",
+                boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                ":hover": { backgroundColor: "#f0f0f0" },
+              }}
+            >
+              <Download sx={{ color: "#666" }} />
             </IconButton>
           </Box>
 
