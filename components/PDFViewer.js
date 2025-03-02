@@ -7,7 +7,6 @@ import { PDFDocument, rgb } from "pdf-lib";
 import styles from "./PDFViewer.module.css"; 
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import * as pdfjsLib from 'pdfjs-dist';
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.js";
 
@@ -23,7 +22,6 @@ const PDFViewer = ({
   const [highlights, setHighlights] = useState([]);
   const [selectedColor, setSelectedColor] = useState("#FFFF00");
   const pdfContainerRef = useRef(null);
-  const pdfDocumentRef = useRef(null);
 
   useEffect(() => {
     const savedHighlights = JSON.parse(localStorage.getItem("pdfHighlights")) || [];
@@ -103,38 +101,6 @@ const PDFViewer = ({
     }
   };
 
-  const handleTextHighlight = async () => {
-    const selection = window.getSelection();
-    if (selection.toString().trim()) {
-      const range = selection.getRangeAt(0);
-      const rects = Array.from(range.getClientRects());
-
-      const containerRect = pdfContainerRef.current.getBoundingClientRect();
-      const pageHeight = containerRect.height / numPages;
-      const pageNumber = Math.floor((rects[0].top - containerRect.top) / pageHeight) + 1;
-
-      const pdfDoc = await pdfjsLib.getDocument(pdfFile).promise;
-      const page = await pdfDoc.getPage(pageNumber);
-      const viewport = page.getViewport({ scale });
-
-      const newHighlights = rects.map((rect) => {
-        const pdfPoint = viewport.convertToPdfPoint(rect.left, rect.top);
-        return {
-          rect: {
-            left: pdfPoint[0],
-            top: pdfPoint[1],
-            width: rect.width / scale,
-            height: rect.height / scale,
-          },
-          color: selectedColor,
-          pageNumber,
-        };
-      });
-
-      setHighlights((prevHighlights) => [...prevHighlights, ...newHighlights]);
-    }
-  };
-
   return (
     <Box display="flex" flexDirection="column" alignItems="center" mt={3}>
       {pdfFile ? (
@@ -150,7 +116,6 @@ const PDFViewer = ({
             backgroundColor: "#f8f8f8",
             position: "relative",
           }}
-          onMouseUp={isHighlighting ? handleTextHighlight : undefined}
         >
           <Box
             sx={{
@@ -192,23 +157,6 @@ const PDFViewer = ({
                   renderAnnotationLayer={true}
                   className={styles.textContent}
                 />
-                {highlights
-                  .filter((h) => h.pageNumber === index + 1)
-                  .map((highlight, i) => (
-                    <Box
-                      key={i}
-                      sx={{
-                        position: "absolute",
-                        top: `${highlight.rect.top * scale}px`,
-                        left: `${highlight.rect.left * scale}px`,
-                        width: `${highlight.rect.width * scale}px`,
-                        height: `${highlight.rect.height * scale}px`,
-                        backgroundColor: highlight.color,
-                        opacity: 0.3,
-                        pointerEvents: "none",
-                      }}
-                    />
-                  ))}
               </Box>
             ))}
           </Document>
