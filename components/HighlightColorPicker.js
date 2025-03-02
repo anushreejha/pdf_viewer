@@ -1,6 +1,6 @@
 import { Box, IconButton, Popover } from "@mui/material";
 
-const colors = ["#FFFF00"]; 
+const colors = ["#FFFF00"]; // Only yellow
 
 const HighlightColorPicker = ({ anchorEl, onClose, onSelectColor }) => {
   return (
