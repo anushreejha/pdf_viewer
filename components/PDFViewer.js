@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, forwardRef } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Box, Typography, IconButton } from "@mui/material";
 import { ZoomIn, ZoomOut, Download } from "@mui/icons-material";
@@ -7,6 +7,7 @@ import { PDFDocument, rgb } from "pdf-lib";
 import styles from "./PDFViewer.module.css"; 
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import { Editor } from 'reactjs-editor';
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.js";
 
@@ -22,6 +23,7 @@ const PDFViewer = ({
   const [highlights, setHighlights] = useState([]);
   const [selectedColor, setSelectedColor] = useState("#FFFF00");
   const pdfContainerRef = useRef(null);
+  const editorRef = useRef(null);
 
   useEffect(() => {
     const savedHighlights = JSON.parse(localStorage.getItem("pdfHighlights")) || [];
@@ -101,6 +103,16 @@ const PDFViewer = ({
     }
   };
 
+  const handleHighlight = (color) => {
+    if (editorRef.current) {
+      editorRef.current.highlight(color);
+    }
+  };
+
+  const EditorWithRef = forwardRef((props, ref) => (
+    <Editor {...props} ref={ref} />
+  ));
+
   return (
     <Box display="flex" flexDirection="column" alignItems="center" mt={3}>
       {pdfFile ? (
@@ -144,6 +156,7 @@ const PDFViewer = ({
             onSelectColor={(color) => {
               setSelectedColor(color);
               onSelectColor(color);
+              handleHighlight(color);
             }}
           />
 
@@ -156,6 +169,14 @@ const PDFViewer = ({
                   renderTextLayer={true}
                   renderAnnotationLayer={true}
                   className={styles.textContent}
+                />
+                <EditorWithRef
+                  ref={editorRef}
+                  contentEditable={isHighlighting}
+                  htmlContent={`<div>
+                    <p>Select text to highlight.</p>
+                  </div>`}
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
                 />
               </Box>
             ))}

@@ -21,6 +21,7 @@
         "react": "latest",
         "react-dom": "latest",
         "react-pdf": "^9.2.1",
-        "react-pdf-highlighter": "^8.0.0-rc.0"
+        "react-pdf-highlighter": "^8.0.0-rc.0",
+        "reactjs-editor": "^10.0.1"
     }
 }
