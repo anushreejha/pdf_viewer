@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button, Container, Box, Typography, IconButton } from "@mui/material";
-import PDFViewer from "../components/pdfviewer";
+import PDFViewer from "../components/PDFViewer";
 import {
   EditNoteOutlined,
   SearchOutlined,
