@@ -1,10 +1,9 @@
-import { useState, useRef, useEffect, forwardRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Box, Typography, IconButton } from "@mui/material";
 import { ZoomIn, ZoomOut, Download } from "@mui/icons-material";
 import HighlightColorPicker from "./HighlightColorPicker";
-import { PDFDocument, rgb } from "pdf-lib";
-import styles from "./PDFViewer.module.css"; 
+import styles from "./PDFViewer.module.css";
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 
@@ -16,12 +15,14 @@ const PDFViewer = ({
   colorPickerAnchor,
   onColorPickerClose,
   onSelectColor,
+  highlights = [], 
   setHighlights,
 }) => {
   const [numPages, setNumPages] = useState(null);
   const [scale, setScale] = useState(1.2);
   const [selectedColor, setSelectedColor] = useState("#FFFF00");
   const pdfContainerRef = useRef(null);
+  const pageRefs = useRef([]);
 
   useEffect(() => {
     const savedHighlights = JSON.parse(localStorage.getItem("pdfHighlights")) || [];
@@ -30,6 +31,7 @@ const PDFViewer = ({
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
+    pageRefs.current = new Array(numPages).fill(null);
   };
 
   const handleZoomIn = () => {
@@ -47,17 +49,36 @@ const PDFViewer = ({
     if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
-      const containerRect = pdfContainerRef.current.getBoundingClientRect();
+
+      // find the page number based on the selection
+      let pageNumber = -1;
+      for (let i = 0; i < pageRefs.current.length; i++) {
+        const pageRect = pageRefs.current[i]?.getBoundingClientRect();
+        if (pageRect && rect.top >= pageRect.top && rect.bottom <= pageRect.bottom) {
+          pageNumber = i + 1;
+          break;
+        }
+      }
+
+      if (pageNumber === -1) return; // selection is not within any page
+
+      const pageRect = pageRefs.current[pageNumber - 1].getBoundingClientRect();
+
+      // relative positioning as per zoom scaling
+      const left = (rect.left - pageRect.left) / scale;
+      const top = (rect.top - pageRect.top) / scale;
+      const width = rect.width / scale;
+      const height = rect.height / scale;
 
       const highlight = {
         text: selection.toString(),
         rect: {
-          left: rect.left - containerRect.left,
-          top: rect.top - containerRect.top,
-          width: rect.width,
-          height: rect.height,
+          left,
+          top,
+          width,
+          height,
         },
-        pageNumber: 1, // You need to determine the page number based on the selection
+        pageNumber,
         color: selectedColor,
       };
 
@@ -66,6 +87,9 @@ const PDFViewer = ({
         localStorage.setItem("pdfHighlights", JSON.stringify(newHighlights));
         return newHighlights;
       });
+
+      // clear selection to avoid highlighting the same text multiple times
+      selection.removeAllRanges();
     }
   };
 
@@ -118,8 +142,29 @@ const PDFViewer = ({
 
           <Document file={pdfFile} onLoadSuccess={onDocumentLoadSuccess}>
             {Array.from(new Array(numPages), (_, index) => (
-              <Box key={`page_${index + 1}`} sx={{ position: "relative" }}>
+              <Box
+                key={`page_${index + 1}`}
+                ref={(el) => (pageRefs.current[index] = el)}
+                sx={{ position: "relative" }}
+              >
                 <Page pageNumber={index + 1} scale={scale} />
+                {highlights
+                  .filter((highlight) => highlight.pageNumber === index + 1)
+                  .map((highlight, i) => (
+                    <Box
+                      key={i}
+                      sx={{
+                        position: "absolute",
+                        left: `${highlight.rect.left * scale}px`,
+                        top: `${highlight.rect.top * scale}px`,
+                        width: `${highlight.rect.width * scale}px`,
+                        height: `${highlight.rect.height * scale}px`,
+                        backgroundColor: highlight.color,
+                        opacity: 0.3,
+                        pointerEvents: "none",
+                      }}
+                    />
+                  ))}
               </Box>
             ))}
           </Document>

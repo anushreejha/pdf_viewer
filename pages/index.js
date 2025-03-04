@@ -13,9 +13,9 @@ export default function Index() {
   const [pdfFile, setPdfFile] = useState(null);
   const [isHighlighting, setIsHighlighting] = useState(false);
   const [colorPickerAnchor, setColorPickerAnchor] = useState(null);
-  const [highlights, setHighlights] = useState([]);
+  const [highlights, setHighlights] = useState([]); 
 
-  // Clear highlights on server restart
+  // clear highlights on server restart
   useEffect(() => {
     localStorage.removeItem("pdfHighlights");
     setHighlights([]);
@@ -35,7 +35,7 @@ export default function Index() {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, display: "flex", gap: 2 }}>
-      {/* Highlights Box */}
+      {/* highlights box */}
       <Box
         sx={{
           width: "200px",
@@ -44,9 +44,9 @@ export default function Index() {
           padding: "20px",
           borderRadius: "8px",
           textAlign: "center",
-          maxHeight: "80vh", // Limit height
-          overflowY: "auto", // Add scrollbar
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", // Add shadow
+          maxHeight: "80vh", 
+          overflowY: "auto", 
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", 
         }}
       >
         <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
@@ -60,7 +60,7 @@ export default function Index() {
               padding: "10px",
               borderRadius: "8px",
               marginBottom: "10px",
-              boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)", // Add shadow
+              boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)", 
             }}
           >
             <Typography variant="body2" sx={{ color: "#333333", lineHeight: "1.5" }}>
@@ -70,7 +70,7 @@ export default function Index() {
         ))}
       </Box>
 
-      {/* PDF Viewer Section */}
+      {/* PDF preview box */}
       <Box sx={{ flex: 1 }}>
         <Typography variant="h4" gutterBottom sx={{ color: "#0171c5", textAlign: "center" }}>
           PDF Viewer
@@ -100,12 +100,13 @@ export default function Index() {
             onSelectColor={(color) => {
               setColorPickerAnchor(null);
             }}
-            setHighlights={setHighlights}
+            highlights={highlights} 
+            setHighlights={setHighlights} 
           />
         )}
       </Box>
 
-      {/* Sidebar Icons */}
+      {/* menu bar (icons) */}
       <Box
         sx={{
           width: "64px",
