@@ -15,7 +15,7 @@ export default function Index() {
   const [colorPickerAnchor, setColorPickerAnchor] = useState(null);
   const [highlights, setHighlights] = useState([]);
 
-  // clear highlights on server restart
+  // Clear highlights on server restart
   useEffect(() => {
     localStorage.removeItem("pdfHighlights");
     setHighlights([]);
@@ -34,17 +34,17 @@ export default function Index() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, display: "flex", gap: 2, height: "80vh" }}>
-      {/* highlights box */}
+    <Container maxWidth="lg" sx={{ mt: 4, display: "flex", gap: 2, alignItems: "stretch" }}>
+      {/* Highlights box */}
       <Box
         sx={{
-          width: "200px",
+          flex: "0 0 200px", 
           backgroundColor: "#f5f5f5",
           color: "#0171c5",
           padding: "20px",
           borderRadius: "8px",
           textAlign: "center",
-          height: "100%", 
+          height: "auto", 
           overflowY: "auto", 
           boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
         }}
@@ -71,7 +71,7 @@ export default function Index() {
       </Box>
 
       {/* PDF preview box */}
-      <Box sx={{ flex: 1, height: "100%" }}>
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <Typography variant="h4" gutterBottom sx={{ color: "#0171c5", textAlign: "center" }}>
           PDF Viewer
         </Typography>
@@ -106,10 +106,10 @@ export default function Index() {
         )}
       </Box>
 
-      {/* menu bar (icons) */}
+      {/* Menu bar (icons) */}
       <Box
         sx={{
-          width: "64px",
+          flex: "0 0 64px", 
           backgroundColor: "#f5f5f5",
           padding: "10px",
           borderRadius: "8px",
@@ -117,7 +117,7 @@ export default function Index() {
           flexDirection: "column",
           alignItems: "center",
           gap: 2,
-          height: "100%", 
+          height: "auto", 
         }}
       >
         <IconButton
