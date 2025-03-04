@@ -13,7 +13,7 @@ export default function Index() {
   const [pdfFile, setPdfFile] = useState(null);
   const [isHighlighting, setIsHighlighting] = useState(false);
   const [colorPickerAnchor, setColorPickerAnchor] = useState(null);
-  const [highlights, setHighlights] = useState([]); 
+  const [highlights, setHighlights] = useState([]);
 
   // clear highlights on server restart
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function Index() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, display: "flex", gap: 2 }}>
+    <Container maxWidth="lg" sx={{ mt: 4, display: "flex", gap: 2, height: "80vh" }}>
       {/* highlights box */}
       <Box
         sx={{
@@ -44,9 +44,9 @@ export default function Index() {
           padding: "20px",
           borderRadius: "8px",
           textAlign: "center",
-          maxHeight: "80vh", 
+          height: "100%", 
           overflowY: "auto", 
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", 
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
         }}
       >
         <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
@@ -60,7 +60,7 @@ export default function Index() {
               padding: "10px",
               borderRadius: "8px",
               marginBottom: "10px",
-              boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)", 
+              boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
             }}
           >
             <Typography variant="body2" sx={{ color: "#333333", lineHeight: "1.5" }}>
@@ -71,7 +71,7 @@ export default function Index() {
       </Box>
 
       {/* PDF preview box */}
-      <Box sx={{ flex: 1 }}>
+      <Box sx={{ flex: 1, height: "100%" }}>
         <Typography variant="h4" gutterBottom sx={{ color: "#0171c5", textAlign: "center" }}>
           PDF Viewer
         </Typography>
@@ -100,8 +100,8 @@ export default function Index() {
             onSelectColor={(color) => {
               setColorPickerAnchor(null);
             }}
-            highlights={highlights} 
-            setHighlights={setHighlights} 
+            highlights={highlights}
+            setHighlights={setHighlights}
           />
         )}
       </Box>
@@ -117,6 +117,7 @@ export default function Index() {
           flexDirection: "column",
           alignItems: "center",
           gap: 2,
+          height: "100%", 
         }}
       >
         <IconButton
