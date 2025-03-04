@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Container, Box, Typography, IconButton } from "@mui/material";
 import PDFViewer from "../components/PDFViewer";
 import {
@@ -13,6 +13,13 @@ export default function Index() {
   const [pdfFile, setPdfFile] = useState(null);
   const [isHighlighting, setIsHighlighting] = useState(false);
   const [colorPickerAnchor, setColorPickerAnchor] = useState(null);
+  const [highlights, setHighlights] = useState([]);
+
+  // Clear highlights on server restart
+  useEffect(() => {
+    localStorage.removeItem("pdfHighlights");
+    setHighlights([]);
+  }, []);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -28,6 +35,7 @@ export default function Index() {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, display: "flex", gap: 2 }}>
+      {/* Highlights Box */}
       <Box
         sx={{
           width: "200px",
@@ -36,14 +44,33 @@ export default function Index() {
           padding: "20px",
           borderRadius: "8px",
           textAlign: "center",
+          maxHeight: "80vh", // Limit height
+          overflowY: "auto", // Add scrollbar
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", // Add shadow
         }}
       >
-        <Typography variant="h6">Highlights</Typography>
-        <Typography variant="body2" sx={{ mt: 2 }}>
-          Highlighted texts will appear here.
+        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
+          Highlights
         </Typography>
+        {highlights.map((highlight, i) => (
+          <Box
+            key={i}
+            sx={{
+              backgroundColor: "#ffffff",
+              padding: "10px",
+              borderRadius: "8px",
+              marginBottom: "10px",
+              boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)", // Add shadow
+            }}
+          >
+            <Typography variant="body2" sx={{ color: "#333333", lineHeight: "1.5" }}>
+              {highlight.text}
+            </Typography>
+          </Box>
+        ))}
       </Box>
 
+      {/* PDF Viewer Section */}
       <Box sx={{ flex: 1 }}>
         <Typography variant="h4" gutterBottom sx={{ color: "#0171c5", textAlign: "center" }}>
           PDF Viewer
@@ -73,10 +100,12 @@ export default function Index() {
             onSelectColor={(color) => {
               setColorPickerAnchor(null);
             }}
+            setHighlights={setHighlights}
           />
         )}
       </Box>
 
+      {/* Sidebar Icons */}
       <Box
         sx={{
           width: "64px",

@@ -7,7 +7,6 @@ import { PDFDocument, rgb } from "pdf-lib";
 import styles from "./PDFViewer.module.css"; 
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import { Editor } from 'reactjs-editor';
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.js";
 
@@ -17,29 +16,20 @@ const PDFViewer = ({
   colorPickerAnchor,
   onColorPickerClose,
   onSelectColor,
+  setHighlights,
 }) => {
   const [numPages, setNumPages] = useState(null);
   const [scale, setScale] = useState(1.2);
-  const [highlights, setHighlights] = useState([]);
   const [selectedColor, setSelectedColor] = useState("#FFFF00");
   const pdfContainerRef = useRef(null);
-  const editorRef = useRef(null);
 
   useEffect(() => {
     const savedHighlights = JSON.parse(localStorage.getItem("pdfHighlights")) || [];
     setHighlights(savedHighlights);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("pdfHighlights", JSON.stringify(highlights));
-  }, [highlights]);
+  }, [setHighlights]);
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
-  };
-
-  const onDocumentLoadError = (error) => {
-    console.error("Error while loading document: ", error);
   };
 
   const handleZoomIn = () => {
@@ -50,68 +40,34 @@ const PDFViewer = ({
     setScale((prevScale) => Math.max(0.5, prevScale - 0.1));
   };
 
-  const handleDownload = async () => {
-    if (!pdfFile) return;
+  const handleTextSelection = () => {
+    if (!isHighlighting) return;
 
-    try {
-      const existingPdfBytes = await fetch(pdfFile).then((res) => res.arrayBuffer());
-      const pdfDoc = await PDFDocument.load(existingPdfBytes);
-      const pages = pdfDoc.getPages();
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      const containerRect = pdfContainerRef.current.getBoundingClientRect();
 
-      for (const highlight of highlights) {
-        const { pageNumber, rect, color } = highlight;
+      const highlight = {
+        text: selection.toString(),
+        rect: {
+          left: rect.left - containerRect.left,
+          top: rect.top - containerRect.top,
+          width: rect.width,
+          height: rect.height,
+        },
+        pageNumber: 1, // You need to determine the page number based on the selection
+        color: selectedColor,
+      };
 
-        if (pageNumber < 1 || pageNumber > pages.length) {
-          console.error("Invalid page number:", pageNumber);
-          continue;
-        }
-
-        const page = pages[pageNumber - 1];
-        const { width, height } = page.getSize();
-
-        if (
-          isNaN(rect.left) ||
-          isNaN(rect.top) ||
-          isNaN(rect.width) ||
-          isNaN(rect.height)
-        ) {
-          console.error("Invalid highlight coordinates:", rect);
-          continue;
-        }
-
-        const x = rect.left * (width / pdfContainerRef.current.offsetWidth);
-        const y = height - (rect.top + rect.height) * (height / pdfContainerRef.current.offsetHeight);
-
-        page.drawRectangle({
-          x,
-          y,
-          width: rect.width * (width / pdfContainerRef.current.offsetWidth),
-          height: rect.height * (height / pdfContainerRef.current.offsetHeight),
-          color: rgb(1, 1, 0),
-          opacity: 0.3,
-        });
-      }
-
-      const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([pdfBytes], { type: "application/pdf" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "highlighted-document.pdf";
-      link.click();
-    } catch (error) {
-      console.error("Error while generating highlighted PDF: ", error);
+      setHighlights((prev) => {
+        const newHighlights = [...prev, highlight];
+        localStorage.setItem("pdfHighlights", JSON.stringify(newHighlights));
+        return newHighlights;
+      });
     }
   };
-
-  const handleHighlight = (color) => {
-    if (editorRef.current) {
-      editorRef.current.highlight(color);
-    }
-  };
-
-  const EditorWithRef = forwardRef((props, ref) => (
-    <Editor {...props} ref={ref} />
-  ));
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" mt={3}>
@@ -128,6 +84,7 @@ const PDFViewer = ({
             backgroundColor: "#f8f8f8",
             position: "relative",
           }}
+          onMouseUp={handleTextSelection}
         >
           <Box
             sx={{
@@ -145,7 +102,7 @@ const PDFViewer = ({
             <IconButton onClick={handleZoomIn} size="small">
               <ZoomIn />
             </IconButton>
-            <IconButton onClick={handleDownload} size="small">
+            <IconButton onClick={() => {}} size="small">
               <Download />
             </IconButton>
           </Box>
@@ -156,28 +113,13 @@ const PDFViewer = ({
             onSelectColor={(color) => {
               setSelectedColor(color);
               onSelectColor(color);
-              handleHighlight(color);
             }}
           />
 
-          <Document file={pdfFile} onLoadSuccess={onDocumentLoadSuccess} onLoadError={onDocumentLoadError}>
+          <Document file={pdfFile} onLoadSuccess={onDocumentLoadSuccess}>
             {Array.from(new Array(numPages), (_, index) => (
               <Box key={`page_${index + 1}`} sx={{ position: "relative" }}>
-                <Page
-                  pageNumber={index + 1}
-                  scale={scale}
-                  renderTextLayer={true}
-                  renderAnnotationLayer={true}
-                  className={styles.textContent}
-                />
-                <EditorWithRef
-                  ref={editorRef}
-                  contentEditable={isHighlighting}
-                  htmlContent={`<div>
-                    <p>Select text to highlight.</p>
-                  </div>`}
-                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-                />
+                <Page pageNumber={index + 1} scale={scale} />
               </Box>
             ))}
           </Document>
