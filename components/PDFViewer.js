@@ -3,7 +3,6 @@ import { Document, Page, pdfjs } from "react-pdf";
 import { Box, Typography, IconButton } from "@mui/material";
 import { ZoomIn, ZoomOut, Download } from "@mui/icons-material";
 import HighlightColorPicker from "./HighlightColorPicker";
-import styles from "./PDFViewer.module.css";
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 
